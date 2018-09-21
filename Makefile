@@ -12,7 +12,7 @@ all: $(WORKLIST_EXEC)
 $(WORKLIST_EXEC): $(WORKLIST_LIB) worklist.ml
 	$(OCAMLC) $^ -o $@
 
-$(WORKLIST_LIB): $(ARITH_LIB) pwZ_Worklist.cmo arithGrammar_Worklist.cmo
+$(WORKLIST_LIB): $(ARITH_LIB) pwZ_Worklist.cmo pwZ_Worklist_Help.cmo arithGrammar_Worklist.cmo
 	$(OCAMLC) -a $^ -o $@
 
 arithGrammar_Worklist.cmo: $(ARITH_LIB) pwZ_Worklist.cmo arithGrammar_Worklist.ml
