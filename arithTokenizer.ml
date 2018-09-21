@@ -1,5 +1,4 @@
 open ArithTags
-open Char
 
 exception FailedMatch
 
