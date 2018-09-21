@@ -13,8 +13,7 @@ exception FailedMatch
  * Fig 19.
  * The implementation of m_0 required the definition of a new `undefined` value,
  * which is given here. It is essentially a placeholder to be discarded. *)
-type exp = { mutable m : mem;
-             e : exp' }
+type exp = { mutable m : mem; e : exp' }
 
 and exp' = T of tok
          | Seq of lab * exp list
@@ -77,7 +76,7 @@ let derive (p : pos) ((t, i) : tok) ((e, m) : zipper) : unit =
             else ()
     | Seq (l, [])                       -> d_u (Seq (l, [])) m
     | Seq (l, e :: es)                  -> d_d (SeqC (m, l, [], es)) e
-    | Alt es                            -> List.iter 
+    | Alt es                            -> List.iter
                                              (fun e -> d_d (AltC m) e)
                                              !es
 
@@ -131,7 +130,7 @@ let parse (ts : tok list) (e : exp) : exp list =
      match ts with
      | [] -> List.iter (fun z -> derive p ("EOF", 0) z) w;
              List.map unwrap_top_exp !tops
-     | ((t, s) :: ts') -> 
+     | ((t, s) :: ts') ->
              List.iter (fun z -> derive p (t, s) z) w;
              parse (p + 1) ts')
   in worklist := [init_zipper e];
