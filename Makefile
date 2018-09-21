@@ -1,13 +1,15 @@
 OCAMLC := ocamlc
 
 WORKLIST_EXEC := worklist
-EXECS := $(WORKLIST_EXEC)
+LOOKAHEAD_EXEC := lookahead
+EXECS := $(WORKLIST_EXEC) $(LOOKAHEAD_EXEC)
 
 WORKLIST_LIB := worklist.cma
+LOOKAHEAD_LIB := lookahead.cma
 ARITH_LIB := arith.cma
 
 .PHONY: all
-all: $(WORKLIST_EXEC)
+all: $(WORKLIST_EXEC) $(LOOKAHEAD_EXEC)
 
 $(WORKLIST_EXEC): $(WORKLIST_LIB) worklist.ml
 	$(OCAMLC) $^ -o $@
@@ -17,6 +19,17 @@ $(WORKLIST_LIB): $(ARITH_LIB) pwZ_Worklist.cmo pwZ_Worklist_Help.cmo arithGramma
 
 arithGrammar_Worklist.cmo: $(ARITH_LIB) pwZ_Worklist.cmo arithGrammar_Worklist.ml
 	$(OCAMLC) -c $^ -o $@
+
+
+$(LOOKAHEAD_EXEC): $(LOOKAHEAD_LIB) lookahead.ml
+	$(OCAMLC) $^ -o $@
+
+$(LOOKAHEAD_LIB): $(ARITH_LIB) pwZ_WorklistWithLookahead.cmo pwZ_WorklistWithLookahead_Help.cmo arithGrammar_WorklistWithLookahead.cmo
+	$(OCAMLC) -a $^ -o $@
+
+arithGrammar_WorklistWithLookahead.cmo: $(ARITH_LIB) pwZ_WorklistWithLookahead.cmo arithGrammar_WorklistWithLookahead.ml
+	$(OCAMLC) -c $^ -o $@
+
 
 $(ARITH_LIB): arithTags.cmo arithTokenizer.ml
 	$(OCAMLC) -a $^ -o $@
