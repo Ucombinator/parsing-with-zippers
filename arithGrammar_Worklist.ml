@@ -1,6 +1,13 @@
 open PwZ_Worklist
 open ArithTags
 
+(* This format is the construction of our grammar.
+ *
+ * We have a Racket program that can generate these types of files, but this
+ * example was written by hand. We would not recommend handwriting more complex
+ * grammars, so we assume a "full" implementation of PwZ would utilize a similar
+ * program to pre-generate these grammars. *)
+
 let rec g_INT       = { m = m_0; e = T ("INT", t_INT) }
 and g_OPEN_PAREN    = { m = m_0; e = T ("(", t_OPEN_PAREN) }
 and g_CLOSE_PAREN   = { m = m_0; e = T (")", t_CLOSE_PAREN) }
