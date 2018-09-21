@@ -88,7 +88,7 @@ let tops : exp list ref = ref []
 exception FailedMatch
 
 (* Core algorithm. Similar to Fig 20, but with additional steps taken. *)
-let derive (p : pos) ((t, i) : tok) ((e, m) : zipper) : unit = 
+let derive (p : pos) ((t, i) : tok) ((e, m) : zipper) : unit =
 
   let rec d_d (c : cxt) (e : exp) : unit =
     if p == e.m.start
@@ -108,7 +108,7 @@ let derive (p : pos) ((t, i) : tok) ((e, m) : zipper) : unit =
             else ()
     | Seq (l, [])                       -> d_u (Seq (l, [])) m
     | Seq (l, e :: es)                  -> d_d (SeqC (m, l, [], es)) e
-    | Alt es                            -> List.iter 
+    | Alt es                            -> List.iter
                                              (fun e -> d_d (AltC m) e)
                                              !es
 
@@ -151,7 +151,7 @@ let parse (ts : tok list) (e : exp) : exp list =
      match ts with
      | [] -> List.iter (fun z -> derive p ("EOF", 0) z) w;
              List.map unwrap_top_exp !tops
-     | ((t, s) :: ts') -> 
+     | ((t, s) :: ts') ->
              List.iter (fun z -> derive p (t, s) z) w;
              parse (p + 1) ts')
   in worklist := [init_zipper e];
