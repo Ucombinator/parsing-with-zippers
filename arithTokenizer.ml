@@ -40,7 +40,7 @@ let tokenize (str : string) : token list =
     | _ ->
         (match s.[0] with
          | ' ' ->
-             iter (rest s) xs
+             iter (rest s) (accumulate !acc xs)
          | c when isInt c ->
              (append acc c;
               iter (rest s) xs)
