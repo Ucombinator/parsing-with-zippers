@@ -1,9 +1,13 @@
 (* Simple type aliases.
  * Fig 1. *)
-type lab = string
-type tag = int
-type pos = int
-type tok = lab * tag
+type lab = string       (* token and sequence labels *)
+type tag = int          (* token tag, used for token comparison *)
+type pos = int          (* token position in input *)
+type tok = lab * tag    (* token *)
+
+(* An exception for when a match fails. Should never appear.
+ * This is primarily to suppress warnings in a safe manner. *)
+exception FailedMatch
 
 (* Additional types necessary for using zippers without memoization tables.
  * Fig 19.
@@ -26,41 +30,6 @@ and mem  = {
   mutable end_ : pos;
   mutable result : exp }
 
-let string_of_exp (e : exp) : string =
-  let rec make_nice_string (e' : exp') (c : int) : string =
-    let indent (i : int) (ss : string list) : string list =
-      List.map (fun s -> (String.make i ' ') ^ s) ss
-    in
-    let join (ss : string list) : string =
-      String.concat "\n" ss
-    in
-    let indent_subexp_strings (es : exp list) (ind : int) : string =
-      match es with
-      | [] -> ""
-      | _ -> "\n" ^ (join (indent ind (List.map (fun e -> make_nice_string e ind) (List.map (fun e -> e.e) es))))
-    in
-
-    match e' with
-    | T (l, t) ->
-        "(T " ^ l ^ ")"
-    | Seq (l, []) ->
-        "(Seq " ^ l ^ ")"
-    | Seq (l, e :: es) ->
-        (let leader = "(Seq " ^ l ^ " " in
-         let ind = c + String.length leader in
-         leader ^ (make_nice_string e.e ind) ^ (indent_subexp_strings es ind) ^ ")"
-        )
-    | Alt (res) ->
-        match !res with
-        | [] ->
-            "(Alt)"
-        | e :: es ->
-            (let leader = "(Alt " in
-             let ind = c + String.length leader in
-             leader ^ (make_nice_string e.e ind) ^ (indent_subexp_strings es ind) ^ ")"
-            )
-  in make_nice_string e.e 0
-
 type zipper = exp' * mem
 
 let rec undefined = {
@@ -79,16 +48,15 @@ let m_0 = {
   end_ = -1;
   result = undefined }
 
-(* A global worklist, used for TODO *)
+(* A global worklist. This is used for keeping track of what to do next. *)
 let worklist : (zipper list) ref = ref []
 
-(* A list of "tops", which gives us parse-null of a Top for free. TODO *)
+(* A list of "tops", which gives us parse-null of a Top for free. This is useful
+ * so that in the end we can simply return the result. *)
 let tops : exp list ref = ref []
 
-(* An exception when a match fails. Should never appear. *)
-exception FailedMatch
-
-(* Core algorithm. Similar to Fig 20, but with additional steps taken. *)
+(* Core algorithm. Similar to Fig 20, but with additional steps taken for
+ * performance. Note that the return type is now `unit`. *)
 let derive (p : pos) ((t, i) : tok) ((e, m) : zipper) : unit = 
 
   let rec d_d (c : cxt) (e : exp) : unit =
@@ -132,6 +100,9 @@ let derive (p : pos) ((t, i) : tok) ((e, m) : zipper) : unit =
 
   in d_u e m
 
+(* Here we construct the initial zipper. This allows us to properly traverse the
+ * grammar from the first step. This construction is similar in spirit to the
+ * Seq/SeqC pair used on l318 (near the end of Section 4) of the paper. *)
 let init_zipper (e : exp) : zipper =
   let e' = Seq ("<init_zipper:Seq>", []) in
   let m_top : mem = { start = 0; parents = [Top]; end_ = -1; result = undefined } in
@@ -139,11 +110,19 @@ let init_zipper (e : exp) : zipper =
   let m_seq : mem = { start = 0; parents = [c]; end_ = -1; result = undefined } in
   (e', m_seq)
 
+(* When a result is produced, it will have some vestigial structure remaining
+ * from the initial zipper (see above). This function removes those extra bits
+ * so only the important stuff is returned once the parse is complete. *)
 let unwrap_top_exp (e : exp) : exp =
   match e.e with
   | Seq (_, [_; e'])    -> e'
   | _                   -> raise FailedMatch
 
+(* This is our wrapper/driver function. It initializes blank worklist and tops
+ * lists for each element in the worklist. This allows for a generational style
+ * of worklist (where "child processes" can each have their own worklist).
+ *
+ * The token tag 0 is assumed to be reserved for the end of the input. *)
 let parse (ts : tok list) (e : exp) : exp list =
   let rec parse (p : pos) (ts : tok list) : exp list =
     (let w = !worklist in

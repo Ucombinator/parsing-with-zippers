@@ -1,11 +1,12 @@
 open PwZ_Worklist
+open PwZ_Worklist_Help
 open ArithGrammar_Worklist
 open ArithTokenizer
 
 exception Bad_Arg_Count of int
 
 let parse (s : string) : exp list =
-  PwZ_Worklist.parse (ArithTokenizer.tokenize s) ArithGrammar_Worklist.g_EXPR
+  parse (tokenize s) g_EXPR
 
 let string_list_of_exp_list (es : exp list) : string list =
   List.map string_of_exp es
