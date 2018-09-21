@@ -1,17 +1,18 @@
+open ArithTags
 open Char
 
 exception FailedMatch
 
 type token = string * int
 
-let getInt (s : string) : token = (s, 1)
+let getInt (s : string) : token = (s, t_INT)
 
 let getToken (c : char) : token =
   match c with
-  | '(' -> ("(", 2)
-  | ')' -> (")", 3)
-  | '*' -> ("*", 4)
-  | '+' -> ("+", 5)
+  | '(' -> ("(", t_OPEN_PAREN)
+  | ')' -> (")", t_CLOSE_PAREN)
+  | '*' -> ("*", t_TIMES)
+  | '+' -> ("+", t_PLUS)
   | _   -> raise FailedMatch
 
 let isInt (c : char) : bool =
