@@ -1,11 +1,21 @@
 OCAMLC := ocamlc
 
+ARITHLIB := arith.cma
+
 .PHONY: worklist
-arithGrammar.cma: pwZ_Worklist.cma arithGrammar.ml
+worklist: worklist.cma
+
+worklist.cma: $(ARITHLIB) pwZ_Worklist.cmo arithGrammar_Worklist.cmo
 	$(OCAMLC) -a $^ -o $@
 
-pwZ_Worklist.cma: pwZ_Worklist.ml
+arithGrammar_Worklist.cmo: $(ARITHLIB) arithGrammar_Worklist.ml
+	$(OCAMLC) -c $^ -o $@
+
+$(ARITHLIB): arithTags.cmo arithTokenizer.ml
 	$(OCAMLC) -a $^ -o $@
+
+%.cmo: %.ml
+	$(OCAMLC) -c $^
 
 .PHONY: clean
 clean:
