@@ -8,7 +8,7 @@ worklist: worklist.cma
 worklist.cma: $(ARITHLIB) pwZ_Worklist.cmo arithGrammar_Worklist.cmo
 	$(OCAMLC) -a $^ -o $@
 
-arithGrammar_Worklist.cmo: $(ARITHLIB) arithGrammar_Worklist.ml
+arithGrammar_Worklist.cmo: $(ARITHLIB) pwZ_Worklist.cmo arithGrammar_Worklist.ml
 	$(OCAMLC) -c $^ -o $@
 
 $(ARITHLIB): arithTags.cmo arithTokenizer.ml
