@@ -9,8 +9,7 @@ type tok = lab * tag
  * Fig 19.
  * The implementation of m_0 required the definition of a new `undefined` value,
  * which is given here. It is essentially a placeholder to be discarded. *)
-type exp = { mutable m : mem;
-             e : exp' }
+type exp = { mutable m : mem; e : exp' }
 
 and exp' = T of tok
          | Seq of lab * exp list
