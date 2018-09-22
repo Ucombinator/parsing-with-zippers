@@ -3,7 +3,7 @@ open PwZ_WorklistWithLookahead
 let concat_map (f : 'a -> 'b list) (l : 'a list) : 'b list =
   List.concat (List.map f l)
 
-let plug ((e, c) : zipper) (p : pos) : exp list =
+let plug (p : pos) ((e, c) : zipper) : exp list =
   let rec up (e : exp') (m : mem) : exp list =
     let e' = { m = m_0; e = e; first = [| |] } in
     m.end_ <- p;
