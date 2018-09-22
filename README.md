@@ -3,15 +3,11 @@
 Parsing with Zippers (PwZ) is an extension of Parsing with Derivatives (Might
 et al. 2011) using McBride derivatives (McBride 2001) and zippers (Huet 1997).
 
-This repository is a clean implementation of two of the extensions to the
+This repository is an implementation of two extensions to the
 algorithm presented in our paper, namely:
 
 1. A global worklist
 2. One-token downward lookahead
-
-Our original implementation (which we used for benchmarking) is equally as
-powerful, but is not terribly clean. This repository was created specifically to
-provide a clean, straightforward implementation of the improved algorithm.
 
 ## Building
 
